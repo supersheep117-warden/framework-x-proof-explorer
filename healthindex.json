@@ -1,10 +1,3 @@
-{"ok": true}
-    <script id="html_badge_script1">
-        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDqG4yWmSHO45Lm25jY%2FThx4%2BHRKv98C%2B2qv4IG9ero4qQJ8dP6LbCZXuQOYKsinCgVqYzFV%2F3%2B2SHeYAuboLzGlHmnth1bBGbcSJojn%2BQLM6p5J7zd%2BvOKWmLvVaRs2ta74hZkd0DZyiqmzk2DLQ%2Bk25Gm31x8v1sQAqk%2B2vEJNrA6Bq1B%2B69xDe0z%2BaO%2FiOaw4rYptcQpxupDjBKNr9kOuTURipviMjim4g5hH9Cg20Jo%2FHxVOau3E36bwHCt4YgPbbkBeed13saH1Q8yEwpUd3dtKgWGXSB2uSNF1%2Bn3UyRKks5I02DkAUawZq2nPjCbbefPtbh1wBQEc5vCIm4lpTwrZMqOxLs%2BSbyZAF6gW1fcYq2x3NrZpBzIeGlYiF4MzvsPwakj8%2FG5G7GVIhf0WWajYWVla0TEaNSKvDc%2BCBn62Z%2BT7dpGLlPQZRpeK%2Fl5rKbQMyAyI8GhgKwxXXOePyHQpF7Zc3RLOwKZSn2YSH2gNEZvGUNCt9DHovfpI1gg%3D%3D";
-        window.__genspark_locale = "en-US";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDqG4yWmSHO45Lm25jY/Thx4+HRKv98C+2qv4IG9ero4qQJ8dP6LbCZXuQOYKsinCgVqYzFV/3+2SHeYAuboLzGlHmnth1bBGbcSJojn+QLM6p5J7zd+vOKWmLvVaRs2ta74hZkd0DZyiqmzk2DLQ+k25Gm31x8v1sQAqk+2vEJNrA6Bq1B+69xDe0z+aO/iOaw4rYptcQpxupDjBKNr9kOuTURipviMjim4g5hH9Cg20Jo/HxVOau3E36bwHCt4YgPbbkBeed13saH1Q8yEwpUd3dtKgWGXSB2uSNF1+n3UyRKks5I02DkAUawZq2nPjCbbefPtbh1wBQEc5vCIm4lpTwrZMqOxLs+SbyZAF6gW1fcYq2x3NrZpBzIeGlYiF4MzvsPwakj8/G5G7GVIhf0WWajYWVla0TEaNSKvDc+CBn62Z+T7dpGLlPQZRpeK/l5rKbQMyAyI8GhgKwxXXOePyHQpF7Zc3RLOwKZSn2YSH2gNEZvGUNCt9DHovfpI1gg==";
-    </script>
-    
-    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
-    
+{
+  "ok": true
+}
