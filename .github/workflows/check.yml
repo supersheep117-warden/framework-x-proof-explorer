@@ -2,6 +2,7 @@ name: Surface-Lock Checks
 
 on:
   push:
+    branches: [ main ]
   pull_request:
   workflow_dispatch:
 
@@ -16,12 +17,12 @@ jobs:
       - name: Install tools (jq, tidy, curl, node)
         run: |
           sudo apt-get update
-          sudo apt-get install -y jq tidy
-          # Node for optional link check
-          sudo apt-get install -y nodejs npm
+          sudo apt-get install -y jq tidy curl
+          sudo apt-get install -y nodejs npm  # for optional link check
 
       - name: Validate required files exist
         run: |
+          set -e
           required=("index.html" ".nojekyll" "manifest.json" "dom.html" "css.hash" "healthindex.html" "healthindex.json")
           missing=0
           for f in "${required[@]}"; do
@@ -40,26 +41,52 @@ jobs:
 
       - name: Validate HTML syntax (non-fatal warnings)
         run: |
-          tidy -errors -q index.html     || true
-          tidy -errors -q dom.html       || true
-          tidy -errors -q healthindex.html || true
+          tidy -errors -q index.html          || true
+          tidy -errors -q dom.html            || true
+          tidy -errors -q healthindex.html    || true
 
       - name: Build a local preview (simple static serve)
         run: |
-          # Use Python’s http.server for a local check
           python3 -m http.server 8000 &
+          echo $! > server.pid
           sleep 2
 
       - name: Sanity check local endpoints (HTTP 200)
         run: |
           set -e
-          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/ | grep -q "^200$"
-          # If you renamed files for GitHub Pages, reflect that here:
+          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/                | grep -q "^200$"
           curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/healthindex.html | grep -q "^200$"
-          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/dom.html | grep -q "^200$"
-          # Files that act like endpoints on Pages:
+          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/dom.html         | grep -q "^200$"
           test -f css.hash
           test -f manifest.json
+
+      - name: Stop local server
+        if: always()
+        run: |
+          if [ -f server.pid ]; then kill "$(cat server.pid)" || true; fi
+
+      # ✅ LIVE GitHub Pages 200 checks (critical for Surface-Lock)
+      - name: Endpoint HTTP 200 checks (live Pages)
+        env:
+          BASE: https://supersheep117-warden.github.io/framework-x-proof-explorer
+        run: |
+          set -e
+          urls=(
+            "$BASE/"
+            "$BASE/dom.html"
+            "$BASE/manifest.json"
+            "$BASE/css.hash"
+            "$BASE/healthindex.html"
+            "$BASE/healthindex.json"
+          )
+          for u in "${urls[@]}"; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$u")
+            echo "$u -> $code"
+            if [ "$code" != "200" ]; then
+              echo "::error::Non-200 for $u ($code)"
+              exit 1
+            fi
+          done
 
       # OPTIONAL: basic broken-link crawl of local index
       - name: Broken link check (optional)
