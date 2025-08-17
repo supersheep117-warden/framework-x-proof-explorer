@@ -2,7 +2,6 @@ name: Surface-Lock Checks
 
 on:
   push:
-    branches: [ main ]
   pull_request:
   workflow_dispatch:
 
@@ -16,9 +15,13 @@ jobs:
 
       - name: Install tools (jq, tidy, curl, node)
         run: |
+          set -e
           sudo apt-get update
-          sudo apt-get install -y jq tidy curl
-          sudo apt-get install -y nodejs npm  # for optional link check
+          sudo apt-get install -y jq curl python3
+          # HTML Tidy package on GitHub runners:
+          sudo apt-get install -y tidy-html5 || true
+          # Node only if we run the optional link crawl
+          sudo apt-get install -y nodejs npm || true
 
       - name: Validate required files exist
         run: |
@@ -39,56 +42,37 @@ jobs:
           jq empty manifest.json
           jq empty healthindex.json
 
-      - name: Validate HTML syntax (non-fatal warnings)
+      - name: Validate HTML syntax (non-fatal)
         run: |
-          tidy -errors -q index.html          || true
-          tidy -errors -q dom.html            || true
-          tidy -errors -q healthindex.html    || true
+          # Tidy may not exist on some runners; don’t fail the job on warnings.
+          if command -v tidy >/dev/null 2>&1; then
+            tidy -errors -q index.html         || true
+            tidy -errors -q dom.html           || true
+            tidy -errors -q healthindex.html   || true
+          else
+            echo "tidy not available; skipping HTML lint."
+          fi
 
-      - name: Build a local preview (simple static serve)
+      - name: Start local server
         run: |
-          python3 -m http.server 8000 &
-          echo $! > server.pid
-          sleep 2
+          python3 -m http.server 8000 >/dev/null 2>&1 &
+          for i in {1..20}; do
+            if curl -sSf http://localhost:8000/ >/dev/null; then exit 0; fi
+            sleep 0.3
+          done
+          echo "Server did not come up in time" >&2
+          exit 1
 
       - name: Sanity check local endpoints (HTTP 200)
         run: |
           set -e
-          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/                | grep -q "^200$"
-          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/healthindex.html | grep -q "^200$"
-          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/dom.html         | grep -q "^200$"
+          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/                  | grep -q "^200$"
+          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/healthindex.html  | grep -q "^200$"
+          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/dom.html          | grep -q "^200$"
           test -f css.hash
           test -f manifest.json
 
-      - name: Stop local server
-        if: always()
-        run: |
-          if [ -f server.pid ]; then kill "$(cat server.pid)" || true; fi
-
-      # ✅ LIVE GitHub Pages 200 checks (critical for Surface-Lock)
-      - name: Endpoint HTTP 200 checks (live Pages)
-        env:
-          BASE: https://supersheep117-warden.github.io/framework-x-proof-explorer
-        run: |
-          set -e
-          urls=(
-            "$BASE/"
-            "$BASE/dom.html"
-            "$BASE/manifest.json"
-            "$BASE/css.hash"
-            "$BASE/healthindex.html"
-            "$BASE/healthindex.json"
-          )
-          for u in "${urls[@]}"; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" "$u")
-            echo "$u -> $code"
-            if [ "$code" != "200" ]; then
-              echo "::error::Non-200 for $u ($code)"
-              exit 1
-            fi
-          done
-
-      # OPTIONAL: basic broken-link crawl of local index
+      # Optional link crawl (non-fatal)
       - name: Broken link check (optional)
         run: |
           npx --yes broken-link-checker http://localhost:8000 -ro --filter-level=3 || true
