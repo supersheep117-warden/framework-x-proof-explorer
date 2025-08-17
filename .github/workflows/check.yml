@@ -1,0 +1,67 @@
+name: Surface-Lock Checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tools (jq, tidy, curl, node)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq tidy
+          # Node for optional link check
+          sudo apt-get install -y nodejs npm
+
+      - name: Validate required files exist
+        run: |
+          required=("index.html" ".nojekyll" "manifest.json" "dom.html" "css.hash" "healthindex.html" "healthindex.json")
+          missing=0
+          for f in "${required[@]}"; do
+            if [ ! -f "$f" ]; then
+              echo "::error file=$f::Required file missing: $f"
+              missing=1
+            fi
+          done
+          test $missing -eq 0
+
+      - name: Validate JSON syntax
+        run: |
+          set -e
+          jq empty manifest.json
+          jq empty healthindex.json
+
+      - name: Validate HTML syntax (non-fatal warnings)
+        run: |
+          tidy -errors -q index.html     || true
+          tidy -errors -q dom.html       || true
+          tidy -errors -q healthindex.html || true
+
+      - name: Build a local preview (simple static serve)
+        run: |
+          # Use Python’s http.server for a local check
+          python3 -m http.server 8000 &
+          sleep 2
+
+      - name: Sanity check local endpoints (HTTP 200)
+        run: |
+          set -e
+          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/ | grep -q "^200$"
+          # If you renamed files for GitHub Pages, reflect that here:
+          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/healthindex.html | grep -q "^200$"
+          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/dom.html | grep -q "^200$"
+          # Files that act like endpoints on Pages:
+          test -f css.hash
+          test -f manifest.json
+
+      # OPTIONAL: basic broken-link crawl of local index
+      - name: Broken link check (optional)
+        run: |
+          npx --yes broken-link-checker http://localhost:8000 -ro --filter-level=3 || true
