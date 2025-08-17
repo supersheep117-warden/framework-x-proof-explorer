@@ -1,158 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feature Registry Manifest v4.4_locked</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100 p-6">
-    <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Feature Registry Manifest v4.4_locked</h1>
-        
-        <div class="bg-white rounded-lg shadow-lg p-6">
-            <h2 class="text-xl font-semibold mb-4">Surface Lock Component Registry</h2>
-            <pre id="manifest" class="bg-gray-50 p-4 rounded border text-sm overflow-auto" style="max-height: 600px;"></pre>
-        </div>
-    </div>
-
-    <script>
-        const manifestData = {
-            "version": "4.4_locked",
-            "timestamp": "2025-08-16T10:00:00Z",
-            "surface_lock_status": "ACTIVE",
-            "locked_components": {
-                "dom_schema": {
-                    "status": "LOCKED",
-                    "selectors": {
-                        "evidence_grid": ".evidence-grid",
-                        "evidence_card": ".evidence-card",
-                        "status_chips": ".status-chip",
-                        "filter_controls": ".filter-controls",
-                        "export_button": ".export-btn",
-                        "provenance_block": ".provenance-info",
-                        "modal_container": ".modal-overlay"
-                    },
-                    "required_elements": [
-                        "evidence-grid",
-                        "status-chip-cluster",
-                        "open-original-link",
-                        "filter-dropdown",
-                        "csv-export-button"
-                    ]
-                },
-                "css_classes": {
-                    "status": "LOCKED",
-                    "badge_classes": [
-                        ".badge-verified",
-                        ".badge-archive", 
-                        ".badge-access-required",
-                        ".badge-disabled"
-                    ],
-                    "layout_classes": [
-                        ".card-grid",
-                        ".card-layout",
-                        ".modal-layout",
-                        ".sidebar-layout"
-                    ],
-                    "color_scheme": {
-                        "verified": "#10B981",
-                        "archive": "#F59E0B",
-                        "access_required": "#EF4444",
-                        "disabled": "#6B7280"
-                    }
-                },
-                "routes": {
-                    "status": "LOCKED",
-                    "allowed_routes": [
-                        "/",
-                        "/evidence/:id",
-                        "/export",
-                        "/about"
-                    ],
-                    "protected_routes": [
-                        "/_health",
-                        "/_audit/dom",
-                        "/_audit/manifest.json",
-                        "/_audit/css.hash"
-                    ]
-                },
-                "features": {
-                    "status": "LOCKED",
-                    "core_features": {
-                        "smart_access_system": {
-                            "enabled": true,
-                            "fallback_cascade": ["live", "archive", "alt_source", "access_required"]
-                        },
-                        "quarantine_system": {
-                            "enabled": true,
-                            "blocked_domains": ["example.com", "placeholder.domain"]
-                        },
-                        "badge_honesty": {
-                            "enabled": true,
-                            "enforce_auth_mapping": true
-                        },
-                        "advanced_filtering": {
-                            "enabled": true,
-                            "filter_types": ["access_type", "status", "date_range"]
-                        },
-                        "batch_export": {
-                            "enabled": true,
-                            "formats": ["csv", "json"]
-                        },
-                        "lazy_loading": {
-                            "enabled": true,
-                            "performance_optimization": true
-                        }
-                    }
-                },
-                "data_rules": {
-                    "status": "LOCKED",
-                    "enforcement": {
-                        "quarantine_dummy_domains": true,
-                        "badge_honesty_401_403": true,
-                        "auth_gap_documentation": true,
-                        "fallback_coverage_minimum": 95
-                    }
-                }
-            },
-            "validation_rules": {
-                "dom_integrity": {
-                    "required_selectors": 7,
-                    "missing_allowed": 0
-                },
-                "css_integrity": {
-                    "hash_verification": true,
-                    "locked_classes": 12
-                },
-                "route_integrity": {
-                    "protected_routes": 4,
-                    "public_routes": 4
-                },
-                "feature_integrity": {
-                    "core_features": 6,
-                    "all_enabled": true
-                }
-            },
-            "compliance": {
-                "surface_lock_version": "v4.4",
-                "last_validated": "2025-08-16T10:00:00Z",
-                "next_validation": "2025-08-23T10:00:00Z",
-                "violations_detected": 0,
-                "certification_status": "COMPLIANT"
-            }
-        };
-
-        document.getElementById('manifest').textContent = JSON.stringify(manifestData, null, 2);
-    </script>
-</body>
-</html>
-    <script id="html_badge_script1">
-        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDou3T0tM814Qctb0Jaek1HbAeStxfJWUZrvUwwhF%2FkEXTkfaDyERrX7vUDT1JiaF2AJAvDi4YE2nmLLTGFv5tyPJAcp8W8O%2Boy7rRQyeQ55BI%2FVryuvdDoiQ9EmEiwDf3dQV0JJim5vKhoXgu7bmXhcurTFuxdQMQHfkLuRTCIUIcVPwFKZ2ob9AM892ExkB8YAnV3kHHIxh%2BXB%2BXXKM0Bd335JWev4vQGZielF5plDBNbSHnv%2FKandptrbiGGdWR%2BrpgH0b0DoGyiN5ViRsr9MTnMHESRCGKcPgpRCwqTv7lKo8iayBFis36v1pchPUO9H8l6mpKq9sbCqAWfbIxfkh6ta3HUenMjN0l6HM4rr2EQbJrdf9Bvt1rUki%2BJj%2BKILMU4eQygEqyU8gHFrGjmhXnClFL2fcnZCpcUUiReAtIJTfo3CMb6ej9m7egohJzUYYcHSnHy9K2ztbeA1pMcC8IJF72pEsFGmQvS%2FBEssVGTb1fqwxgsuKExQgcSrpkDe0qYNyiS6SdXPGRqczVT4%3D";
-        window.__genspark_locale = "en-US";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDou3T0tM814Qctb0Jaek1HbAeStxfJWUZrvUwwhF/kEXTkfaDyERrX7vUDT1JiaF2AJAvDi4YE2nmLLTGFv5tyPJAcp8W8O+oy7rRQyeQ55BI/VryuvdDoiQ9EmEiwDf3dQV0JJim5vKhoXgu7bmXhcurTFuxdQMQHfkLuRTCIUIcVPwFKZ2ob9AM892ExkB8YAnV3kHHIxh+XB+XXKM0Bd335JWev4vQGZielF5plDBNbSHnv/KandptrbiGGdWR+rpgH0b0DoGyiN5ViRsr9MTnMHESRCGKcPgpRCwqTv7lKo8iayBFis36v1pchPUO9H8l6mpKq9sbCqAWfbIxfkh6ta3HUenMjN0l6HM4rr2EQbJrdf9Bvt1rUki+Jj+KILMU4eQygEqyU8gHFrGjmhXnClFL2fcnZCpcUUiReAtIJTfo3CMb6ej9m7egohJzUYYcHSnHy9K2ztbeA1pMcC8IJF72pEsFGmQvS/BEssVGTb1fqwxgsuKExQgcSrpkDe0qYNyiS6SdXPGRqczVT4=";
-    </script>
-    
-    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
-    
+{
+  "version": "v4.4_locked",
+  "timestamp": "2025-08-17T00:00:00Z",
+  "features": [
+    {"id": "smart_access_system", "status": "locked"},
+    {"id": "evidence_cards", "status": "locked"},
+    {"id": "filters_access", "status": "enabled"},
+    {"id": "exports_csv", "status": "enabled"}
+  ],
+  "audit_endpoints": {
+    "root": "/",
+    "health_html": "/healthindex.html",
+    "health_json": "/healthindex.json",
+    "dom": "/dom.html",
+    "css_hash": "/css.hash"
+  }
+}
