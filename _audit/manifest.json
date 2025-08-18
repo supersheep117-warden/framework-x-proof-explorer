@@ -1,0 +1,32 @@
+{
+  "version": "v4.4_locked",
+  "timestamp": "2025-08-17T00:00:00Z",
+  "components": {
+    "smart_access_system": [
+      "live_access_indicators_green",
+      "archive_access_indicators_yellow",
+      "alternative_source_indicators_orange",
+      "access_required_badges_red",
+      "cascading_fallback_logic",
+      "new_tab_opening_target_blank"
+    ],
+    "evidence_display": [
+      "framework_x_evidence_cards",
+      "source_information_display",
+      "framework_x_terminology_highlighting",
+      "open_original_button_functionality"
+    ],
+    "user_interface": [
+      "search_functionality",
+      "filter_capabilities",
+      "responsive_design_layout",
+      "pdf_export_capability"
+    ],
+    "data_integrity": [
+      "json_provenance_logging",
+      "framework_x_content_validation",
+      "source_authenticity_verification",
+      "transparent_access_status_reporting"
+    ]
+  }
+}
