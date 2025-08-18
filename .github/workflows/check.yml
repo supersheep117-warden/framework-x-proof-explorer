@@ -15,18 +15,21 @@ jobs:
 
       - name: Install tools (jq, tidy, curl, node)
         run: |
-          set -e
           sudo apt-get update
-          sudo apt-get install -y jq curl python3
-          # HTML Tidy package on GitHub runners:
-          sudo apt-get install -y tidy-html5 || true
-          # Node only if we run the optional link crawl
-          sudo apt-get install -y nodejs npm || true
+          sudo apt-get install -y jq tidy
+          sudo apt-get install -y nodejs npm
 
       - name: Validate required files exist
         run: |
-          set -e
-          required=("index.html" ".nojekyll" "manifest.json" "dom.html" "css.hash" "healthindex.html" "healthindex.json")
+          required=(
+            ".nojekyll"
+            "index.html"
+            "_health/index.html"
+            "_health/index.json"
+            "_audit/dom.html"
+            "_audit/manifest.json"
+            "_audit/css.hash"
+          )
           missing=0
           for f in "${required[@]}"; do
             if [ ! -f "$f" ]; then
@@ -39,40 +42,38 @@ jobs:
       - name: Validate JSON syntax
         run: |
           set -e
-          jq empty manifest.json
-          jq empty healthindex.json
+          jq empty _health/index.json
+          jq empty _audit/manifest.json
 
-      - name: Validate HTML syntax (non-fatal)
+      - name: Validate HTML syntax (non-fatal warnings)
         run: |
-          # Tidy may not exist on some runners; don’t fail the job on warnings.
-          if command -v tidy >/dev/null 2>&1; then
-            tidy -errors -q index.html         || true
-            tidy -errors -q dom.html           || true
-            tidy -errors -q healthindex.html   || true
-          else
-            echo "tidy not available; skipping HTML lint."
-          fi
+          tidy -errors -q index.html || true
+          tidy -errors -q _health/index.html || true
+          tidy -errors -q _audit/dom.html || true
 
       - name: Start local server
         run: |
-          python3 -m http.server 8000 >/dev/null 2>&1 &
-          for i in {1..20}; do
-            if curl -sSf http://localhost:8000/ >/dev/null; then exit 0; fi
-            sleep 0.3
-          done
-          echo "Server did not come up in time" >&2
-          exit 1
+          python3 -m http.server 8000 &>/dev/null &
+          sleep 2
 
       - name: Sanity check local endpoints (HTTP 200)
         run: |
           set -e
-          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/                  | grep -q "^200$"
-          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/healthindex.html  | grep -q "^200$"
-          curl -sS -o /dev/null -w "%{http_code}\n" http://localhost:8000/dom.html          | grep -q "^200$"
-          test -f css.hash
-          test -f manifest.json
+          for url in \
+            "http://localhost:8000/" \
+            "http://localhost:8000/_health/" \
+            "http://localhost:8000/_audit/dom.html" \
+            "http://localhost:8000/_audit/manifest.json" \
+            "http://localhost:8000/_audit/css.hash" \
+          ; do
+            code=$(curl -sS -o /dev/null -w "%{http_code}" "$url")
+            if [ "$code" != "200" ]; then
+              echo "::error ::$url returned $code"
+              exit 1
+            fi
+          done
 
-      # Optional link crawl (non-fatal)
+      # Optional link crawl of the local build (non-fatal)
       - name: Broken link check (optional)
         run: |
           npx --yes broken-link-checker http://localhost:8000 -ro --filter-level=3 || true
